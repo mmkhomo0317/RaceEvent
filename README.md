@@ -20,6 +20,7 @@ Built with ASP.NET Core MVC, ASP.NET Core Identity, Entity Framework Core and SQ
 6. [Getting started](#getting-started)
 7. [Testing and CI](#testing-and-ci)
 8. [Project structure](#project-structure)
+9. [Final Part: RaceDay MVC Front End, Azure Storage and Docker](#final-part-raceday-mvc-front-end-azure-storage-and-docker)
 
 ---
 
@@ -291,3 +292,70 @@ wwwroot/                    Static files (CSS, JavaScript, images)
 RaceEvent.Tests/              xUnit tests
 .github/workflows/ci.yml    GitHub Actions workflow
 ```
+---
+
+## Final Part: RaceDay MVC Front End, Azure Storage and Docker
+
+This final part brings the RaceDay platform together as a polished, role-aware web application. The ASP.NET Core MVC front end consumes the Part 2 REST API for application data and file handling. It does not access the database directly or duplicate API business rules.
+
+### Learning outcomes
+
+The completed project demonstrates how to:
+
+- Build an ASP.NET Core MVC application that consumes a RESTful API.
+- Implement session-based authentication and role-specific interfaces for Organiser and Participant users.
+- Integrate Azure Blob Storage through the API for cloud-based file storage.
+- Containerise an ASP.NET Core application with Docker.
+
+### MVC application and authentication
+
+- Users register and log in through the MVC application, which communicates with the Part 2 API.
+- Session management maintains the authenticated user's state and role across pages.
+- Protected pages require authentication, and users can log out and return to an appropriate page.
+- Organisers and Participants receive distinct interfaces and role-appropriate navigation.
+- The MVC project uses the API for data operations; database access and business rules remain in the API.
+
+### Organiser experience
+
+- A dashboard summarises the Organiser's events, enrolment totals and upcoming dates.
+- Organisers can create, edit and delete events with a name, description, date, location, distance and event type.
+- Organisers can upload or update an event banner when managing an event.
+- Category management supports age and distance categories for each event.
+- Event enrolment pages show Participants, their selected categories and enrolment statuses.
+- Organisers can enter and publish finish times and finishing positions after an event concludes.
+
+### Participant experience
+
+- The home page lists upcoming events and provides filtering options.
+- Event details show full event information and available categories.
+- Logged-in Participants can enrol in an event and choose a category; the enrolment is recorded through the API.
+- Participants can review their enrolled events and enrolment statuses.
+- My Results presents each Participant's completed race history, including event name, date, category, finish time and finishing position.
+- Participants can view and update profile information and upload a profile picture.
+
+### Azure Blob Storage
+
+Azure Blob Storage is integrated with the Part 2 API for uploaded images. The MVC application sends file operations through the API and does not communicate with Azure directly. Event banner images are stored in Blob Storage and displayed on event detail pages; profile picture uploads also use the API's file handling.
+
+### Docker
+
+The MVC application can run in a Docker container using the project's Dockerfile. The Docker setup follows ASP.NET Core containerisation practices, and the application is intended to behave consistently in the container and when run locally.
+
+To build and start the container (replace `raceevent-web` with the image name used by the project):
+
+```bash
+docker build -t raceevent-web .
+docker run --rm -p 8080:8080 raceevent-web
+```
+
+Open `http://localhost:8080` after the container starts. Configure the API base URL and any required secrets or storage settings using the environment variables expected by the application. The API and its dependencies must also be reachable from the container.
+
+### Interface and usability
+
+- The interface follows the RaceDay brand with a sporting visual theme and consistent colours, typography, spacing and components.
+- Bootstrap (or a comparable CSS framework) provides responsive layouts.
+- Pages are reachable through clear navigation appropriate to the user's role.
+- Enrolment statuses use distinct visual treatments, such as green for Confirmed and amber for Pending.
+- Invalid input is handled gracefully with understandable validation feedback rather than raw errors.
+
+
