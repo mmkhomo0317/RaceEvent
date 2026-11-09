@@ -1,0 +1,32 @@
+@using RaceEvent.Models
+@model IEnumerable<Enrolment>
+@{
+    var ev = (Event)ViewBag.Event;
+    ViewData["Title"] = $"Enrolments - {ev.Name}";
+}
+
+<partial name="_Alerts" />
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Enrolments: @ev.Name</h1>
+    <a asp-controller="Results" asp-action="Capture" asp-route-eventId="@ev.Id" class="btn btn-primary">Capture results</a>
+</div>
+<p class="text-muted">@Model.Count() participant(s) enrolled</p>
+
+@if (Model.Any())
+{
+    <table class="table align-middle">
+        <thead><tr><th>Participant</th><th>Gender</th><th>Category</th><th>Enrolled on</th></tr></thead>
+        <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.Participant?.FirstName @e.Participant?.LastName</td>
+                <td>@e.Participant?.Gender</td>
+                <td>@e.Category?.Name</td>
+                <td>@e.EnrolledOn.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+<a asp-controller="Events" asp-action="Details" asp-route-id="@ev.Id" class="btn btn-outline-secondary">Back to event</a>

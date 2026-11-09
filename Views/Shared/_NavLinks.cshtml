@@ -1,0 +1,18 @@
+@* Paste this partial's contents into the <ul class="navbar-nav"> in _Layout.cshtml
+   (or render it with <partial name="_NavLinks" />). *@
+@using RaceEvent.Models
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Events" asp-action="Index">Events</a>
+    </li>
+    @if (User.IsInRole(Roles.Participant))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Enrolments" asp-action="My">My enrolments</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Results" asp-action="My">My results</a>
+        </li>
+    }
+}

@@ -1,0 +1,23 @@
+@model RaceEvent.Models.ViewModels.EnrolViewModel
+@{ ViewData["Title"] = "Enter event"; }
+
+<h1 class="h3">Enter @Model.EventName</h1>
+<p class="text-muted">@Model.EventDate.ToString("dddd, d MMMM yyyy HH:mm") &middot; @Model.Location</p>
+<hr />
+<div class="row"><div class="col-md-6">
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="EventId" />
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label"></label>
+            <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                <option value="">-- Select a category --</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Confirm entry</button>
+        <a asp-controller="Events" asp-action="Details" asp-route-id="@Model.EventId" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div></div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

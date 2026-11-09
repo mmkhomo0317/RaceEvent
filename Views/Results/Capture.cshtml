@@ -1,0 +1,45 @@
+@model RaceEvent.Models.ViewModels.CaptureResultsViewModel
+@{ ViewData["Title"] = $"Capture results - {Model.EventName}"; }
+
+<h1 class="h3">Capture results: @Model.EventName</h1>
+<p class="text-muted">Enter finish time as <code>hh:mm:ss</code> and the finishing position. Leave both blank for DNF / no result.</p>
+
+<form asp-action="Capture">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="EventId" />
+
+    @if (!Model.Rows.Any())
+    {
+        <p class="text-muted">Nobody is enrolled in this event.</p>
+    }
+    else
+    {
+        <table class="table align-middle">
+            <thead><tr><th>Participant</th><th>Category</th><th style="width:180px">Finish time</th><th style="width:140px">Position</th></tr></thead>
+            <tbody>
+            @for (var i = 0; i < Model.Rows.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Model.Rows[i].ParticipantName
+                        <input type="hidden" asp-for="Rows[i].EnrolmentId" />
+                    </td>
+                    <td>@Model.Rows[i].CategoryName</td>
+                    <td>
+                        <input asp-for="Rows[i].FinishTime" class="form-control" placeholder="hh:mm:ss" />
+                        <span asp-validation-for="Rows[i].FinishTime" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="Rows[i].Position" class="form-control" type="number" min="1" />
+                        <span asp-validation-for="Rows[i].Position" class="text-danger"></span>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Save results</button>
+    }
+    <a asp-controller="Events" asp-action="Details" asp-route-id="@Model.EventId" class="btn btn-outline-secondary">Cancel</a>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,133 @@
+
+@model RaceEvent.Models.ViewModels.ParticipantDashboardViewModel
+@{ ViewData["Title"] = "My dashboard"; }
+
+<partial name="_Alerts" />
+
+<div class="mb-4">
+    <h1 class="h3 mb-0">Hi, @Model.DisplayName</h1>
+    <div class="text-muted">Your events and results in one place.</div>
+</div>
+
+@if (Model.NextEvent is { } next)
+{
+    var days = (int)Math.Ceiling((next.Date - DateTime.Now).TotalDays);
+    <div class="card next-event type-@next.EventType.ToString().ToLower() mb-4">
+        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="text-muted small">Your next event</div>
+                <h2 class="h4 mb-1">
+                    <a asp-controller="Events" asp-action="Details" asp-route-id="@next.EventId" class="text-decoration-none">@next.EventName</a>
+                    <partial name="_TypeChip" model="next.EventType" />
+                </h2>
+                <div>@next.Date.ToString("dddd, d MMMM yyyy, HH:mm") &middot; @next.Location</div>
+                <div class="text-muted">@next.DistanceKm.ToString("0.##") km &middot; Category: @next.CategoryName</div>
+            </div>
+            <div class="text-end">
+                <div class="countdown">@(days <= 0 ? "Today" : days.ToString())</div>
+                @if (days > 0) { <div class="text-muted">@(days == 1 ? "day to go" : "days to go")</div> }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        You're not entered in any upcoming events. Pick one from the list below.
+    </div>
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="dash-stat accent-walk"><div class="value">@Model.UpcomingCount</div><div class="label">Upcoming entries</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="dash-stat accent-cycle"><div class="value">@Model.CompletedCount</div><div class="label">Events completed</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="dash-stat accent-run"><div class="value">@Model.ResultsCount</div><div class="label">Results recorded</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="dash-stat"><div class="value">@(Model.BestPosition?.ToString() ?? "-")</div><div class="label">Best finishing position</div></div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <h2 class="h5">My upcoming events</h2>
+        @if (!Model.Upcoming.Any())
+        {
+            <p class="text-muted">Nothing scheduled yet.</p>
+        }
+        else
+        {
+            <ul class="list-group list-group-flush">
+            @foreach (var u in Model.Upcoming)
+            {
+                <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
+                    <div>
+                        <a asp-controller="Events" asp-action="Details" asp-route-id="@u.EventId" class="fw-semibold text-decoration-none">@u.EventName</a>
+                        <partial name="_TypeChip" model="u.EventType" />
+                        <div class="small text-muted">@u.Date.ToString("d MMM yyyy, HH:mm") &middot; @u.Location &middot; @u.CategoryName</div>
+                    </div>
+                </li>
+            }
+            </ul>
+            <a asp-controller="Enrolments" asp-action="My" class="small">Manage my enrolments</a>
+        }
+    </div>
+
+    <div class="col-lg-6">
+        <h2 class="h5">Recent results</h2>
+        @if (!Model.RecentResults.Any())
+        {
+            <p class="text-muted">Results appear here once an organiser has recorded them.</p>
+        }
+        else
+        {
+            <table class="table align-middle">
+                <thead><tr><th>Event</th><th>Category</th><th class="text-end">Time</th><th class="text-end">Position</th></tr></thead>
+                <tbody>
+                @foreach (var r in Model.RecentResults)
+                {
+                    <tr>
+                        <td>@r.EventName<div class="small text-muted">@r.Date.ToString("d MMM yyyy")</div></td>
+                        <td>@r.CategoryName</td>
+                        <td class="text-end">@r.FinishTime?.ToString(@"hh\:mm\:ss")</td>
+                        <td class="text-end fw-semibold">@r.Position</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <a asp-controller="Results" asp-action="My" class="small">All my results</a>
+        }
+    </div>
+</div>
+
+<h2 class="h5 mt-4">Open for entry</h2>
+@if (!Model.OpenEvents.Any())
+{
+    <p class="text-muted">There are no other events open for entry right now.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Event</th><th>Date</th><th>Location</th><th class="text-end">Distance</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var o in Model.OpenEvents)
+            {
+                <tr>
+                    <td>@o.Name <partial name="_TypeChip" model="o.EventType" /></td>
+                    <td>@o.Date.ToString("d MMM yyyy, HH:mm")</td>
+                    <td>@o.Location</td>
+                    <td class="text-end">@o.DistanceKm.ToString("0.##") km</td>
+                    <td class="text-end">
+                        <a asp-controller="Enrolments" asp-action="Create" asp-route-eventId="@o.Id" class="btn btn-sm btn-primary">Enter event</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

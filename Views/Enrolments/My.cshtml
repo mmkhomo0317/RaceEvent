@@ -1,0 +1,42 @@
+@model IEnumerable<RaceEvent.Models.Enrolment>
+@{ ViewData["Title"] = "My enrolments"; }
+
+<partial name="_Alerts" />
+<h1 class="h3">My enrolments</h1>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">You haven't entered any events yet. <a asp-controller="Events" asp-action="Index">Browse events</a>.</p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead><tr><th>Event</th><th>Date</th><th>Category</th><th>Result</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td><a asp-controller="Events" asp-action="Details" asp-route-id="@e.EventId">@e.Event?.Name</a></td>
+                <td>@e.Event?.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@e.Category?.Name</td>
+                <td>
+                    @if (e.Result != null)
+                    {
+                        <span>@e.Result.FinishTime.ToString(@"hh\:mm\:ss") (position @e.Result.Position)</span>
+                    }
+                    else { <span class="text-muted">-</span> }
+                </td>
+                <td class="text-end">
+                    @if (e.Result == null && e.Event!.Date > DateTime.Now)
+                    {
+                        <form asp-action="Withdraw" asp-route-id="@e.Id" method="post" class="d-inline"
+                              onsubmit="return confirm('Withdraw from this event?');">
+                            <button class="btn btn-sm btn-outline-danger">Withdraw</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

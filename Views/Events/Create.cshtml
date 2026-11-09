@@ -1,0 +1,41 @@
+@model RaceEvent.Models.Event
+@{ ViewData["Title"] = "Create event"; }
+
+<h1 class="h3">Create event</h1>
+<hr />
+<div class="row"><div class="col-lg-8">
+    <form asp-action="Create" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <partial name="_EventForm" model="Model" />
+
+            <div class="mb-3">
+                <label for="bannerFile" class="form-label">Banner Image</label>
+                @if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+
+                    {
+                    <div class="mb-2">
+                        <img src="@Model.BannerImageUrl" alt="Current Banner" class="img-thumbnail" style="max-height: 140px" />
+                    </div>
+                    <div class="form-check mb-2">
+						<input class="form-check-input" type="checkbox" id="removeBanner" name="removeBanner" value="true" />"
+                        <label class="form-check-label" for="removeBanner">Remove currentBanner</label>
+                    </div>
+                    }
+                    <input type="file" id="bannerFile" name="bannerFile" class="form-control" 
+                        accept=".jpg, .jpeg, .png, webp, image/jpeg,image/png,image/webp"/>
+                    <div class="form-text">
+                        Choosing a new file replaces the current banner.</div>
+                    @Html.ValidationMessage("bannerFile", new { @class = "text-danger" })
+                </div>
+                @if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+                {
+                    <img src="@Model.BannerImageUrl" alt="Banner for @Model.Name" class="img-fluid rounded w-100 mb-3"
+                        style="max-height:320px;object-fit:cover" />
+                }
+
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div></div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

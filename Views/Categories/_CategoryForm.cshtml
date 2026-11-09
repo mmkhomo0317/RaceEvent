@@ -1,0 +1,12 @@
+@model RaceEvent.Models.Category
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" placeholder="e.g. Under 20, Senior, 10km, 21km" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Kind" class="form-label"></label>
+    <select asp-for="Kind" class="form-select" asp-items="Html.GetEnumSelectList<RaceEvent.Models.CategoryKind>()"></select>
+    <span asp-validation-for="Kind" class="text-danger"></span>
+</div>

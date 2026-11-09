@@ -1,0 +1,37 @@
+﻿@model List<RaceEvent.Models.ViewModels.ManageUserRolesViewModel>
+
+@{
+    ViewData["Title"] = "Manage User Roles";
+    var userId = ViewBag.userId as string;
+}
+
+<div class="container mt-4">
+    <h2>Manage Role for: <strong>@ViewBag.UserName</strong></h2>
+
+    <hr />
+
+    <form method="post">
+
+        <div class="card">
+            <div class="card-header">
+                Add / Remove Roles
+            </div>
+            <div class="card-body">
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <div class="form-check mt-1">
+                        <input type="hidden" asp-for="@Model[i].RoleId" />
+                        <input type="hidden" asp-for="@Model[i].RoleName" />
+                        <input asp-for="@Model[i].isSelected" class="form-check-input" />
+                        <label class="form-check-label" asp-for="@Model[i].isSelected">@Model[i].RoleName</label>
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <input type="submit" value="Update Roles" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+
+</div>

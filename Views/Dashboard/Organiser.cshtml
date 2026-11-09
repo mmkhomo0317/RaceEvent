@@ -1,0 +1,118 @@
+
+@model RaceEvent.Models.ViewModels.OrganiserDashboardViewModel
+@{ ViewData["Title"] = "Organiser dashboard"; }
+
+<partial name="_Alerts" />
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-0">Welcome back, @Model.DisplayName</h1>
+        <div class="text-muted">Here's where your events stand.</div>
+    </div>
+    <a asp-controller="Events" asp-action="Create" class="btn btn-primary">Create event</a>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="dash-stat"><div class="value">@Model.TotalEvents</div><div class="label">Events you run</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="dash-stat accent-walk"><div class="value">@Model.UpcomingEvents</div><div class="label">Coming up</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="dash-stat accent-cycle"><div class="value">@Model.TotalEnrolments</div><div class="label">Total enrolments</div></div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="dash-stat accent-run"><div class="value">@Model.ResultsCaptured</div><div class="label">Results captured</div></div>
+    </div>
+</div>
+
+@if (Model.AwaitingResults.Any())
+{
+    <div class="alert alert-warning">
+        <h2 class="h6 mb-2">Results to capture</h2>
+        <ul class="list-unstyled mb-0">
+        @foreach (var e in Model.AwaitingResults)
+        {
+            var pct = e.EnrolmentCount == 0 ? 0 : (int)Math.Round(100.0 * e.ResultCount / e.EnrolmentCount);
+            <li class="d-flex flex-wrap align-items-center gap-3 py-1">
+                <span class="fw-semibold">@e.Name</span>
+                <span class="text-muted">@e.Date.ToString("d MMM yyyy")</span>
+                <span class="flex-grow-1" style="min-width:120px">
+                    <div class="progress thin" role="progressbar" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width:@pct%"></div>
+                    </div>
+                </span>
+                <span>@e.ResultCount of @e.EnrolmentCount captured</span>
+                <a asp-controller="Results" asp-action="Capture" asp-route-eventId="@e.Id" class="btn btn-sm btn-dark">Capture results</a>
+            </li>
+        }
+        </ul>
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <h2 class="h5">Upcoming events</h2>
+        @if (!Model.Upcoming.Any())
+        {
+            <p class="text-muted">You have no upcoming events. <a asp-controller="Events" asp-action="Create">Create one</a>.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Event</th><th>Date</th><th class="text-end">Categories</th><th class="text-end">Enrolled</th><th></th></tr></thead>
+                    <tbody>
+                    @foreach (var e in Model.Upcoming)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Events" asp-action="Details" asp-route-id="@e.Id" class="fw-semibold text-decoration-none">@e.Name</a>
+                                <partial name="_TypeChip" model="e.EventType" />
+                                <div class="small text-muted">@e.Location</div>
+                            </td>
+                            <td>@e.Date.ToString("d MMM yyyy, HH:mm")</td>
+                            <td class="text-end">
+                                @if (e.CategoryCount == 0)
+                                {
+                                    <a asp-controller="Categories" asp-action="Create" asp-route-eventId="@e.Id" class="small">Add categories</a>
+                                }
+                                else { @e.CategoryCount }
+                            </td>
+                            <td class="text-end">@e.EnrolmentCount</td>
+                            <td class="text-end">
+                                <a asp-controller="Enrolments" asp-action="ForEvent" asp-route-eventId="@e.Id" class="btn btn-sm btn-outline-secondary">Enrolments</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <a asp-controller="Events" asp-action="Index" class="small">All events</a>
+    </div>
+
+    <div class="col-lg-5">
+        <h2 class="h5">Latest enrolments</h2>
+        @if (!Model.RecentEnrolments.Any())
+        {
+            <p class="text-muted">No one has entered your events yet.</p>
+        }
+        else
+        {
+            <ul class="list-group list-group-flush">
+            @foreach (var r in Model.RecentEnrolments)
+            {
+                <li class="list-group-item px-0">
+                    <div class="fw-semibold">@r.ParticipantName</div>
+                    <div class="small text-muted">
+                        <a asp-controller="Enrolments" asp-action="ForEvent" asp-route-eventId="@r.EventId">@r.EventName</a>
+                        &middot; @r.CategoryName &middot; @r.EnrolledOn.ToLocalTime().ToString("d MMM, HH:mm")
+                    </div>
+                </li>
+            }
+            </ul>
+        }
+    </div>
+</div>

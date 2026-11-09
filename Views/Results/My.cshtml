@@ -1,0 +1,27 @@
+@model IEnumerable<RaceEvent.Models.Result>
+@{ ViewData["Title"] = "My results"; }
+
+<h1 class="h3">My results</h1>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No results have been recorded for you yet.</p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead><tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th></tr></thead>
+        <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Enrolment?.Event?.Name</td>
+                <td>@r.Enrolment?.Event?.Date.ToString("yyyy-MM-dd")</td>
+                <td>@r.Enrolment?.Category?.Name</td>
+                <td>@r.FinishTime.ToString(@"hh\:mm\:ss")</td>
+                <td>@r.Position</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

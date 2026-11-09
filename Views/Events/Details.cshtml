@@ -1,0 +1,71 @@
+@using RaceEvent.Models
+@model Event
+@{
+    ViewData["Title"] = Model.Name;
+    bool isOwner = ViewBag.IsOwner == true;
+    bool isEnrolled = ViewBag.IsEnrolled == true;
+}
+
+<partial name="_Alerts" />
+
+
+
+<h1 class="h3">@Model.Name</h1>
+
+@if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+{
+	<img src="@Model.BannerImageUrl" alt="Banner for @Model.Name" class="img-fluid rounded w-100 mb-3"
+		 style="max-height:320px;object-fit:cover" />
+}
+
+<p class="text-muted">@Model.EventType &middot; @Model.DistanceKm.ToString("0.##") km</p>
+
+<dl class="row">
+    <dt class="col-sm-2">Description</dt>
+    <dd class="col-sm-10">@Model.Description</dd>
+    <dt class="col-sm-2">Date</dt>
+    <dd class="col-sm-10">@Model.Date.ToString("dddd, d MMMM yyyy HH:mm")</dd>
+    <dt class="col-sm-2">Location</dt>
+    <dd class="col-sm-10">@Model.Location</dd>
+    <dt class="col-sm-2">Organiser</dt>
+    <dd class="col-sm-10">@Model.Organiser?.FirstName @Model.Organiser?.LastName</dd>
+    <dt class="col-sm-2">Categories</dt>
+    <dd class="col-sm-10">
+        @if (Model.Categories.Any())
+        {
+            @foreach (var c in Model.Categories.OrderBy(c => c.Kind).ThenBy(c => c.Name))
+            {
+                <span class="badge text-bg-secondary me-1">@c.Name</span>
+            }
+        }
+        else
+        {
+            <span class="text-muted">None yet</span>
+        }
+    </dd>
+</dl>
+
+<div class="d-flex flex-wrap gap-2">
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to events</a>
+    <a asp-controller="Categories" asp-action="Index" asp-route-eventId="@Model.Id" class="btn btn-outline-secondary">View categories</a>
+
+    @if (User.IsInRole("Participant"))
+    {
+        @if (isEnrolled)
+        {
+            <a asp-controller="Enrolments" asp-action="My" class="btn btn-success">You're enrolled</a>
+        }
+        else if (Model.Date > DateTime.Now && Model.Categories.Any())
+        {
+            <a asp-controller="Enrolments" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-primary">Enter this event</a>
+        }
+    }
+
+    @if (User.IsInRole("Organiser") && isOwner)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
+        <a asp-controller="Enrolments" asp-action="ForEvent" asp-route-eventId="@Model.Id" class="btn btn-outline-primary">View enrolments</a>
+        <a asp-controller="Results" asp-action="Capture" asp-route-eventId="@Model.Id" class="btn btn-outline-primary">Capture results</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Delete</a>
+    }
+</div>

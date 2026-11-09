@@ -1,0 +1,201 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<style>
+    /* ===== HERO ===== */
+    .race-hero {
+        background: linear-gradient(135deg, var(--race-pink) 0%, var(--race-orange) 60%, var(--race-yellow) 100%);
+        border-radius: 22px;
+        padding: 3.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(255, 46, 136, 0.30);
+        margin-top: .5rem;
+    }
+
+        .race-hero::before {
+            content: '';
+            position: absolute;
+            top: -90px;
+            right: -90px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.15);
+        }
+
+        .race-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -110px;
+            left: -70px;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.10);
+        }
+
+        .race-hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+    .race-hero-kicker {
+        display: inline-block;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        font-size: .85rem;
+        padding: .35rem .9rem;
+        background: rgba(255,255,255,.25);
+        color: #fff;
+        border-radius: 999px;
+        backdrop-filter: blur(6px);
+    }
+
+    .race-hero-title {
+        font-family: 'Barlow Condensed', sans-serif !important;
+        font-weight: 900 !important;
+        text-transform: uppercase;
+        letter-spacing: .01em;
+        line-height: 1;
+        margin: 1rem 0;
+        color: #fff !important;
+        text-shadow: 0 3px 12px rgba(0,0,0,.22);
+    }
+
+    .race-hero-lead {
+        font-size: 1.15rem;
+        max-width: 34rem;
+        color: rgba(255,255,255,.95);
+    }
+
+    .race-hero-badge {
+        font-size: 12rem;
+        line-height: 1;
+        filter: drop-shadow(0 12px 24px rgba(0,0,0,.25));
+        animation: raceFloat 4s ease-in-out infinite;
+    }
+
+    @@keyframes raceFloat {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-14px);
+        }
+    }
+
+    /* ===== FEATURE CARDS ===== */
+    .feature-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.75rem;
+        border-top: 6px solid var(--race-pink);
+        box-shadow: var(--race-shadow);
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--race-shadow-lg);
+        }
+
+        .feature-card.feature-run {
+            border-top-color: var(--race-pink);
+        }
+
+        .feature-card.feature-walk {
+            border-top-color: var(--race-cyan);
+        }
+
+        .feature-card.feature-cycle {
+            border-top-color: var(--race-yellow);
+        }
+
+    .feature-icon {
+        font-size: 2.6rem;
+        margin-bottom: .35rem;
+    }
+
+    /* ===== BOTTOM CTA ===== */
+    .race-cta {
+        background: linear-gradient(135deg, var(--race-cyan) 0%, var(--race-purple) 100%);
+        box-shadow: var(--race-shadow-lg);
+        border-radius: 20px;
+    }
+</style>
+
+@* ============ HERO ============ *@
+<section class="race-hero mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <span class="race-hero-kicker">⚡ Run · Walk Sprint</span>
+            <h1 class="race-hero-title display-3">Your next finish line starts here.</h1>
+            <p class="race-hero-lead">
+                RaceEvent brings organisers and participants together — discover races,
+                enter in seconds, and watch your results roll in.
+            </p>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a asp-controller="Events" asp-action="Index"
+                   class="btn btn-light btn-lg fw-bold text-uppercase px-4">Browse Events</a>
+
+                @if (User.IsInRole("Organiser"))
+                {
+                    <a asp-controller="Events" asp-action="Create"
+                       class="btn btn-warning btn-lg fw-bold text-uppercase px-4">Create Event</a>
+                }
+                else if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a asp-area="Identity" asp-page="/Account/Register"
+                       class="btn btn-outline-light btn-lg fw-bold text-uppercase px-4">Get Started</a>
+                }
+            </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block text-center">
+            <div class="race-hero-badge">🏁</div>
+        </div>
+    </div>
+</section>
+
+@* ============ FEATURES ============ *@
+<section class="mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card feature-run h-100">
+                <div class="feature-icon">🏃</div>
+                <h2 class="h4 mb-2">Run</h2>
+                <p class="mb-0 text-muted">From 5K fun runs to full marathons — chase down a new PB.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card feature-walk h-100">
+                <div class="feature-icon">🚶</div>
+                <h2 class="h4 mb-2">Walk</h2>
+                <p class="mb-0 text-muted">Charity walks, park strolls, group treks — everyone's welcome.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card feature-cycle h-100">
+                <div class="feature-icon">🚴</div>
+                <h2 class="h4 mb-2">Sprint</h2>
+                <p class="mb-0 text-muted">Road races, gravel grinds, weekend rides — go further.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* ============ BOTTOM CTA ============ *@
+<section class="race-cta p-4 p-lg-5 text-white">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h2 class="h3 mb-1 text-white">Ready to toe the line?</h2>
+            <p class="mb-0 opacity-75">Find your event, sign up, and chase that personal best.</p>
+        </div>
+        <a asp-controller="Events" asp-action="Index"
+           class="btn btn-light btn-lg fw-bold text-uppercase px-4">Find Your Race</a>
+    </div>
+</section>

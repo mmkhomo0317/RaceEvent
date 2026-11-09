@@ -1,0 +1,17 @@
+@model RaceEvent.Models.Event
+@{ ViewData["Title"] = "Delete event"; }
+
+<h1 class="h3">Delete event</h1>
+<div class="alert alert-warning">
+    Are you sure you want to delete <strong>@Model.Name</strong>? Its categories will be deleted too.
+    Events with enrolments cannot be deleted.
+</div>
+<dl class="row">
+    <dt class="col-sm-2">Date</dt><dd class="col-sm-10">@Model.Date.ToString("yyyy-MM-dd HH:mm")</dd>
+    <dt class="col-sm-2">Location</dt><dd class="col-sm-10">@Model.Location</dd>
+    <dt class="col-sm-2">Type</dt><dd class="col-sm-10">@Model.EventType, @Model.DistanceKm.ToString("0.##") km</dd>
+</dl>
+<form asp-action="Delete" asp-route-id="@Model.Id">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+</form>

@@ -1,0 +1,45 @@
+@using RaceEvent.Models
+@model IEnumerable<Category>
+@{
+    var ev = (Event)ViewBag.Event;
+    bool isOwner = ViewBag.IsOwner == true;
+    ViewData["Title"] = $"Categories - {ev.Name}";
+}
+
+<partial name="_Alerts" />
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Categories: @ev.Name</h1>
+    @if (User.IsInRole(Roles.Organiser) && isOwner)
+    {
+        <a asp-action="Create" asp-route-eventId="@ev.Id" class="btn btn-primary">Add category</a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No categories have been defined for this event yet.</p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead><tr><th>Name</th><th>Type</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Name</td>
+                <td>@c.Kind</td>
+                <td class="text-end">
+                    @if (User.IsInRole(Roles.Organiser) && isOwner)
+                    {
+                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@c.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+<a asp-controller="Events" asp-action="Details" asp-route-id="@ev.Id" class="btn btn-outline-secondary">Back to event</a>
